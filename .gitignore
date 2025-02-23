@@ -1,2 +1,7 @@
 ClassFlow-Server/node_modules
 ClassFlow-Server/.env
+
+ClassFlow-Client/node_modules
+ClassFlow-Client/dist
+ClassFlow-Client/coverage
+ClassFlow-Client/.parcel-cache
