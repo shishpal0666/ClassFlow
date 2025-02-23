@@ -37,7 +37,7 @@ const validateQuestion = (req) => {
     const { question } = req.body;
 
     if(!question){
-        throw new Error("Question is required");
+        throw new Error("Question is Required");
     }
 };
 
@@ -47,11 +47,11 @@ const validateAnswer = (req) => {
     const { answer, quesCode, questionId } = req.body;
 
     if(!quesCode){
-        throw new Error("Question code required");
+        throw new Error("Question code Required");
     }else if(!answer){
-        throw new Error("Answer is required");
+        throw new Error("Answer is Required");
     }else if(!questionId){
-        throw new Error("Question Id required");
+        throw new Error("Question Id Required");
     }
 
 };
