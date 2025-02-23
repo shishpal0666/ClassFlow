@@ -33,11 +33,28 @@ const validateEditUser = (req) => {
 
 
 const validateQuestion = (req) => {
+
     const { question } = req.body;
+
     if(!question){
         throw new Error("Question is required");
     }
 };
 
 
-module.exports = { validateSignupData, validateEditUser, validateQuestion };
+const validateAnswer = (req) => {
+
+    const { answer, quesCode, questionId } = req.body;
+
+    if(!quesCode){
+        throw new Error("Question code required");
+    }else if(!answer){
+        throw new Error("Answer is required");
+    }else if(!questionId){
+        throw new Error("Question Id required");
+    }
+
+};
+
+
+module.exports = { validateSignupData, validateEditUser, validateQuestion, validateAnswer };

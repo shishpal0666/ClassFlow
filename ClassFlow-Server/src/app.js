@@ -17,11 +17,13 @@ app.use(cookieParser());
 const { authRoute } = require("./routes/auth");
 const { profileRoute } = require("./routes/profile");
 const { quesRoute } = require("./routes/createQues");
+const { ansRoute } = require("./routes/submitAns");
 
 // express routes
 app.use("/", authRoute);
 app.use("/", profileRoute);
 app.use("/", quesRoute);
+app.use("/", ansRoute);
 
 connectDB()
   .then(() => {
