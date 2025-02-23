@@ -2,7 +2,7 @@ const validator = require('validator');
 
 const validateSignupData = (req) => {
 
-    const { firstname, emailId, password } = req.body;
+    const { firstname, emailId, password} = req.body;
 
     if (!firstname) {
         throw new Error("Invalid Name");
@@ -32,4 +32,12 @@ const validateEditUser = (req) => {
 };
 
 
-module.exports = { validateSignupData, validateEditUser };
+const validateQuestion = (req) => {
+    const { question } = req.body;
+    if(!question){
+        throw new Error("Question is required");
+    }
+};
+
+
+module.exports = { validateSignupData, validateEditUser, validateQuestion };

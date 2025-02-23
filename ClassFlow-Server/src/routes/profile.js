@@ -35,7 +35,7 @@ profileRoute.patch('/profile/edit', userAuth, async (req, res) => {
         const updatedUser = await loggedInUser.save();
 
         res.json({
-            message: `${loggedInUser.firstname}, your profile updated successfuly`,
+            message: `${updatedUser.firstname}, your profile updated successfuly`,
             data: updatedUser,
         });
     } catch (err) {

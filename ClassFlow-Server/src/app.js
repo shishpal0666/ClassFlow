@@ -16,10 +16,12 @@ app.use(cookieParser());
 // Define routes order
 const { authRoute } = require("./routes/auth");
 const { profileRoute } = require("./routes/profile");
+const { quesRoute } = require("./routes/createQues");
 
 // express routes
 app.use("/", authRoute);
 app.use("/", profileRoute);
+app.use("/", quesRoute);
 
 connectDB()
   .then(() => {
