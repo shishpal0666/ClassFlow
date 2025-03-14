@@ -1,0 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap");
+@import url("https://db.onlinewebfonts.com/c/b00fe7efa287784ec9a2c72135414a23?family=Geotica+2012");
+
+.logo {
+  font-family: "Geotica 2012", sans-serif;
+}
+
+@import "tailwindcss";
+@plugin "daisyui";
