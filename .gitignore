@@ -5,3 +5,28 @@ ClassFlow-Client/node_modules
 ClassFlow-Client/dist
 ClassFlow-Client/coverage
 ClassFlow-Client/.parcel-cache
+
+
+# Ignore ClassFlow-Client folder contents
+ClassFlow-Client/logs
+ClassFlow-Client/*.log
+ClassFlow-Client/npm-debug.log*
+ClassFlow-Client/yarn-debug.log*
+ClassFlow-Client/yarn-error.log*
+ClassFlow-Client/pnpm-debug.log*
+ClassFlow-Client/lerna-debug.log*
+
+ClassFlow-Client/node_modules
+ClassFlow-Client/dist
+ClassFlow-Client/dist-ssr
+ClassFlow-Client/*.local
+
+# Editor directories and files specific to ClassFlow-Client
+ClassFlow-Client/.vscode/*
+ClassFlow-Client/.idea
+ClassFlow-Client/.DS_Store
+ClassFlow-Client/*.suo
+ClassFlow-Client/*.ntvs*
+ClassFlow-Client/*.njsproj
+ClassFlow-Client/*.sln
+ClassFlow-Client/*.sw?
