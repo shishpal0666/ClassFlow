@@ -1,21 +1,16 @@
 import React from "react";
-import { NavLink } from "react-router";
+import { NavLink } from "react-router"; 
 
 const Navbar = () => {
   return (
-    <nav>
-      <div className="logo">ClassFlow</div>
-      <ul>
-        <li>
-          <NavLink to="/">Home</NavLink>
-        </li>
-        <li>Profile</li>
-        <li>Ask Question</li>
-        <li>Answer Question</li>
-        <li>
-          <NavLink to="/sign-up">Sign Up</NavLink>
-        </li>
-      </ul>
+    <nav className="bg-[#000000] fixed top-0 left-0 w-full z-50">
+      <div className="navbar shadow-sm flex justify-center items-center py-4">
+        <div>
+          <NavLink to="/" className="logo text-[#ffffff] text-4xl">
+            {"{ ClassFlow }"}
+          </NavLink>
+        </div>
+      </div>
     </nav>
   );
 };

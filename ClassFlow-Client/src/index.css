@@ -5,5 +5,13 @@
   font-family: "Geotica 2012", sans-serif;
 }
 
+html {
+  background-color: #0d1321;
+}
+body{
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
 @import "tailwindcss";
 @plugin "daisyui";
