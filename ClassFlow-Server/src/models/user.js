@@ -35,6 +35,11 @@ const userSchema = new mongoose.Schema(
         age: {
             type : Number,
             default : null,
+            validate(value) {
+                if (value !== null && value <= 0) {
+                    throw new Error('Age must be greater than 0');
+                }
+            },
         },
         gender: {
             type : String,

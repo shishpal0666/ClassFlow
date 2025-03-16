@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from "react-router";
+import { Outlet } from "react-router";
 import { useEffect } from "react";
 import axios from "axios";
 import { SERVER_URL } from "../utils/constants";
@@ -12,8 +12,6 @@ const Body = () => {
   const dispatch = useDispatch();
   const userData = useSelector((store) => store.user);
 
-  const navigate = useNavigate();
-
   const fetchUser = async () => {
     if (userData) return;
     try {
@@ -21,11 +19,7 @@ const Body = () => {
         withCredentials: true,
       });
       dispatch(addUser(res.data));
-      console.log(res.data);
     } catch (err) {
-      if (err.status === 401) {
-        navigate("/login");
-      }
       console.error("Error during login:", err.response?.data || err.message);
     }
   };
@@ -35,9 +29,11 @@ const Body = () => {
   }, []);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <Navbar />
-      <Outlet />
+      <main className="flex-grow">
+        <Outlet />
+      </main>
       <Dock />
       <Footer />
     </div>

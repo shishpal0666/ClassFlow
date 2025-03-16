@@ -15,7 +15,7 @@ const Login = () => {
 
   useEffect(() => {
     if(user){
-      navigate("/profile");
+      navigate("/");
     }
   },[navigate, user]);
 
@@ -31,10 +31,9 @@ const Login = () => {
           withCredentials: true,
         }
       );
-      console.log(res?.data);
       dispatch(addUser(res.data));
       setErrorMessage("");
-      navigate("/profile");
+      navigate("/");
     } catch (err) {
       console.error("Error during login:", err.response?.data || err.message);
       setErrorMessage(
