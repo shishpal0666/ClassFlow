@@ -12,6 +12,12 @@ authRoute.post('/sign-up',async (req,res)=>{
 
         const { firstname, lastname, emailId, password} = req.body;
 
+        const reqUser = await User.findOne({emailId : emailId});
+
+        if(reqUser){
+            throw new Error("User already exist, try Login!");
+        }
+
         const hashPassword = await bcrypt.hash(password,10);
 
         const user = new User({
@@ -33,7 +39,7 @@ authRoute.post('/sign-up',async (req,res)=>{
 
         res.json({ message: `${savedUser.firstname} has been registered`, data: savedUser });
     }catch(err){
-        res.status(400).send("ERROR : " + err.message);
+        res.status(400).send(err.message);
     }
 
 });
@@ -67,7 +73,7 @@ authRoute.post('/login', async (req,res)=>{
         
         res.json({ message: "Login!", data: user });
     }catch(err){
-        res.status(400).send("ERROR : " + err.message);
+        res.status(400).send(err.message);
     }
 
 });

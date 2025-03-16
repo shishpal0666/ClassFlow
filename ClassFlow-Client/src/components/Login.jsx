@@ -1,9 +1,39 @@
 import { NavLink } from "react-router";
+import { useState } from "react";
+import axios from "axios";
+import { SERVER_URL } from "../utils/constants";
 
 const Login = () => {
+  const [email, setEmail] = useState("shishpal1@gmail.com");
+  const [password, setPassword] = useState("Shishpal@1234");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post(
+        SERVER_URL + "/login",
+        {
+          emailId: email,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(res?.data);
+      setErrorMessage("");
+    } catch (err) {
+      console.error("Error during login:", err.response?.data || err.message);
+      setErrorMessage(
+        err.response?.data ||
+          "An error occurred during login. Please try again."
+      );
+    }
+  };
+
   return (
-    <div className="flex justify-center items-center  p-4">
-      <div className="card text-neutral-content w-96 bg-[#000000] p-6 overflow-auto max-h-[90vh]">
+    <div className="flex justify-center items-center p-4">
+      <div className="card text-neutral-content w-96 bg-[#000000] p-6 max-h-[90vh]">
         <div className="card-body items-center text-center">
           <h2 className="card-title text-2xl mb-3">Login</h2>
           <div className="w-full max-w-xs">
@@ -13,7 +43,12 @@ const Login = () => {
                   Email Address
                 </span>
               </div>
-              <input type="email" className="input input-bordered w-full" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="input input-bordered w-full"
+              />
             </label>
           </div>
           <div className="w-full max-w-xs">
@@ -21,17 +56,35 @@ const Login = () => {
               <div className="label">
                 <span className="label-text text-amber-50 my-2">Password</span>
               </div>
-              <input type="password" className="input input-bordered w-full" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input input-bordered w-full"
+              />
             </label>
           </div>
-          <button className="btn btn-primary w-full max-w-xs my-4 mt-7">
+          <button
+            onClick={handleLogin}
+            className="btn btn-primary w-full max-w-xs my-4 mt-7"
+          >
             Login
           </button>
+
+          {errorMessage && (
+            <div className="bg-red-100 border-l-4 border-red-500 text-red-800 px-4 py-2 rounded-lg shadow-sm">
+              <p className="text-sm font-medium">{errorMessage}</p>
+            </div>
+          )}
+
           <div className="w-full my-4 border-t border-gray-600"></div>
           <div className="label">
             <span className="label-text text-amber-50">Not a member?</span>
           </div>
-          <NavLink to="/sign-up" className="btn btn-outline btn-secondary w-full max-w-xs">
+          <NavLink
+            to="/sign-up"
+            className="btn btn-outline btn-secondary w-full max-w-xs"
+          >
             Sign Up
           </NavLink>
         </div>
