@@ -1,13 +1,25 @@
-import { NavLink } from "react-router";
-import { useState } from "react";
+import { NavLink, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { SERVER_URL } from "../utils/constants";
+import { addUser } from "../utils/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Signup = () => {
-  const [firstname, setFirstname] = useState("shishpal");
-  const [email, setEmail] = useState("shishpal1@gmail.com");
-  const [password, setPassword] = useState("Shishpal@123");
+  const [firstname, setFirstname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((store) => store.user);
+
+  useEffect(() => {
+    if(user){
+      navigate("/profile");
+    }
+  },[navigate, user]);
+
 
   const handleSignup = async () => {
     try {
@@ -23,7 +35,9 @@ const Signup = () => {
         }
       );
       console.log(res?.data);
+      dispatch(addUser(res.data));
       setErrorMessage("");
+      navigate("/profile");
     } catch (err) {
       console.error("Error during login:", err.response?.data || err.message);
       setErrorMessage(
