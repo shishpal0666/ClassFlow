@@ -6,25 +6,29 @@ const { userAuth } = require("../middleware/userAuth");
 const { checkQuesOwner } = require("../middleware/checkQuesOwner");
 const { validateQuestion } = require("../utils/validators");
 
-quesRoute.get("/question/:quesCode", userAuth, checkQuesOwner, async (req, res) => {
-
+quesRoute.get(
+  "/question/:quesCode",
+  userAuth,
+  checkQuesOwner,
+  async (req, res) => {
     try {
-
-      const ansForQues = await Answers.find({ quesCode: req.question.quesCode });
-      const answers = ansForQues.map(item => item.answer);
-
+      const ansForQues = await Answers.find({
+        quesCode: req.question.quesCode,
+      });
+      const answers = ansForQues.map((item) => item.answer);
 
       res.json({
         message: "Submitted Answers",
-        data:{
-            question : req.question.question,
-            answers : answers,
+        data: {
+          question: req.question.question,
+          answers: answers,
         },
       });
     } catch (err) {
-      res.status(400).send("ERROR: " + err.message);
+      res.status(400).send(err.message);
     }
-});
+  }
+);
 
 quesRoute.post("/question/create", userAuth, async (req, res) => {
   try {
@@ -41,7 +45,32 @@ quesRoute.post("/question/create", userAuth, async (req, res) => {
 
     res.json({ message: "Question created successfully", question: newQues });
   } catch (err) {
-    res.status(400).send("ERROR : " + err.message);
+    res.status(400).send(err.message);
+  }
+});
+
+quesRoute.get("/question/view/:quesCode", userAuth, async (req, res) => {
+  try {
+    const quesCode = req.params.quesCode;
+
+    if (!quesCode) {
+      throw new Error("Question Code Required");
+    }
+
+    const question = await Question.findOne({ quesCode: quesCode });
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    res.json({
+      message: "Question",
+      data: {
+        question: question,
+      },
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
   }
 });
 

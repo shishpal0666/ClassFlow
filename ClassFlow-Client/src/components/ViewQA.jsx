@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 const ViewQA = () => {
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+  const { quesCode } = useParams();
+  console.log(quesCode);
 
   useEffect(() => {
     if (!user) {

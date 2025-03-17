@@ -15,7 +15,7 @@ profileRoute.get('/profile/view', userAuth, async (req, res) => {
 
         res.json({ message: `${user.firstname} Profile`, data: user });
     } catch (err) {
-        res.status(400).send("ERROR : " + err.message);
+        res.status(400).send(err.message);
     }
 });
 
@@ -39,7 +39,7 @@ profileRoute.patch('/profile/edit', userAuth, async (req, res) => {
             data: updatedUser,
         });
     } catch (err) {
-        res.status(400).send("ERROR : " + err.message);
+        res.status(400).send(err.message);
     }
 });
 

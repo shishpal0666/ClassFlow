@@ -88,7 +88,7 @@ authRoute.post('/logout', async (req,res)=>{
 
         res.json({ message: "Logout!"});
     }catch(err){
-        res.status(400).send("ERROR : " + err.message);
+        res.status(400).send(err.message);
     }
 });
 

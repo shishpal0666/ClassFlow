@@ -29,7 +29,7 @@ ansRoute.post('/answer/submit', userAuth, async (req,res) => {
 
         res.json({ message: "Answer submitted successfully", answer : newAns });
     }catch(err){
-        res.status(400).send("ERROR: " + err.message);
+        res.status(400).send(err.message);
     }
 });
 
