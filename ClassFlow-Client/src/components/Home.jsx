@@ -1,62 +1,125 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { SERVER_URL } from "../utils/constants";
+import AuthRedirect from "./AuthRedirect";
+import WelcomeCard from "./WelcomeCard";
+import Toast from "./Toast"; 
 const Home = () => {
+  const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+  const [quesCode, setQuesCode] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState(""); 
+  let toastTimeoutId = null; 
+  
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutId) {
+        clearTimeout(toastTimeoutId); 
+      }
+    };
+  });
+  
+  if (!user) return <AuthRedirect />;
+
+  const showToastMessage = (message, type) => {
+    setToastMessage(message);
+    setToastType(type);
+    setShowToast(true);
+
+    if (toastTimeoutId) {
+      clearTimeout(toastTimeoutId); 
+    }
+
+    toastTimeoutId = setTimeout(() => {
+      setShowToast(false);
+      setToastMessage("");
+      setToastType("");
+    }, 3000); 
+  };
+
+  const handleAns = async () => {
+    try {
+      const response = await axios.get(`${SERVER_URL}/question/view/${quesCode}`, {
+        withCredentials: true,
+      });
+
+      if (response?.data?.data?.question) {
+        navigate(`/answer/${quesCode}`);
+        showToastMessage("Question viewed successfully!", "success");
+      } else {
+        showToastMessage("Question not found or invalid code!", "error");
+      }
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+      const errorMessage = err.response?.data?.message || "There was an error while fetching the question!";
+      showToastMessage(errorMessage, "error");
+    }
+  };
+
+  const handleviewQA = async () => {
+    try {
+      const res = await axios.get(`${SERVER_URL}/question/view/${quesCode}`, {
+        withCredentials: true,
+      });
+
+      if (res?.data?.data?.question) {
+        if (res?.data?.data?.question?.fromUserId === user?.data?._id) {
+          navigate(`/question/${quesCode}`);
+          showToastMessage("Question viewed successfully!", "success");
+        } else {
+          showToastMessage("You are not authorized to view this Q&A.", "error");
+        }
+      } else {
+        showToastMessage("Question not found or invalid code!", "error");
+      }
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+      const errorMessage = err.response?.data?.message || "There was an error while fetching the question!";
+      showToastMessage(errorMessage, "error");
+    }
+  };
 
   return (
     <div className="flex flex-col items-center min-h-screen p-6 bg-gray-900">
-      <div className="mockup-window bg-gray-800 mt-20 border border-gray-700 shadow-lg p-8 w-full max-w-2xl">
-        <div className="grid place-content-center text-xl font-semibold text-white">
-          Hello!
+      {showToast && <Toast message={toastMessage} type={toastType} />}
+      <WelcomeCard />
+      <div className="mt-6 flex flex-col gap-4">
+        <NavLink
+          to="/new/question"
+          className="py-2 flex items-center justify-center bg-blue-600 text-white text-lg font-medium rounded-lg shadow-md hover:bg-blue-700 transition"
+        >
+          <div> New Question</div>
+        </NavLink>
+
+        <div className="flex flex-col justify-center items-center">
+          <input
+            type="text"
+            placeholder="Question Code"
+            value={quesCode}
+            onChange={(e) => setQuesCode(e.target.value)}
+            className="m-4 input input-bordered w-full"
+          />
+          <div className="flex flex-row justify-between">
+            <button
+              onClick={handleAns}
+              className="btn m-2 px-6 py-3 bg-green-600 text-white text-lg font-medium rounded-lg shadow-md hover:bg-green-700 transition"
+            >
+              Answer
+            </button>
+
+            <button
+              onClick={handleviewQA}
+              className="btn m-2 px-6 py-3 bg-red-600 text-white text-lg font-medium rounded-lg shadow-md hover:bg-red-700 transition"
+            >
+              View Q&A
+            </button>
+          </div>
         </div>
       </div>
-      <h1 className="text-4xl font-bold text-white mt-8">
-        Welcome to <span className="text-blue-600">ClassFlow!</span>
-      </h1>
-      <p className="text-gray-400 mt-2 text-lg">
-        The best place to engage, learn, and grow.
-      </p>
-
-      {!user ? (
-        <div className="mt-6 flex gap-4">
-          <NavLink
-            to="/login"
-            className="px-6 py-3 bg-blue-600 text-white text-lg font-medium rounded-lg shadow-md hover:bg-blue-700 transition"
-          >
-            Login
-          </NavLink>
-          <NavLink
-            to="/sign-up"
-            className="px-6 py-3 bg-green-600 text-white text-lg font-medium rounded-lg shadow-md hover:bg-green-700 transition"
-          >
-            Sign Up
-          </NavLink>
-        </div>
-      ) : (
-        <div className="mt-6 flex gap-4">
-          <NavLink
-            to="/new/question"
-            className="px-6 py-3 bg-blue-600 text-white text-lg font-medium rounded-lg shadow-md hover:bg-blue-700 transition"
-          >
-            New Question
-          </NavLink>
-
-          <NavLink
-            to="/answer/submit"
-            className="px-6 py-3 bg-green-600 text-white text-lg font-medium rounded-lg shadow-md hover:bg-green-700 transition"
-          >
-            Answer
-          </NavLink>
-
-          <NavLink
-            to="/question/:quesId"
-            className="px-6 py-3 bg-red-600 text-white text-lg font-medium rounded-lg shadow-md hover:bg-red-700 transition"
-          >
-            View Q&A
-          </NavLink>
-        </div>
-      )}
     </div>
   );
 };

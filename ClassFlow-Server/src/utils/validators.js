@@ -44,14 +44,12 @@ const validateQuestion = (req) => {
 
 const validateAnswer = (req) => {
 
-    const { answer, quesCode, questionId } = req.body;
+    const { answer, quesCode } = req.body;
 
     if(!quesCode){
         throw new Error("Question code Required");
     }else if(!answer){
         throw new Error("Answer is Required");
-    }else if(!questionId){
-        throw new Error("Question Id Required");
     }
 
 };

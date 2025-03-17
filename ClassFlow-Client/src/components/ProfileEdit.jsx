@@ -1,28 +1,22 @@
 import { useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router";
+import { NavLink } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { SERVER_URL } from "../utils/constants";
 import { addUser } from "../utils/userSlice";
+import AuthRedirect from "./AuthRedirect";
 
 const ProfileEdit = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
-
-  useEffect(() => {
-    if (!user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
-
+  
   const [firstName, setFirstName] = useState(user?.data?.firstname || "");
   const [lastName, setLastName] = useState(user?.data?.lastname || "");
   const [age, setAge] = useState(user?.data?.age || "");
   const [gender, setGender] = useState(user?.data?.gender || "");
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
-
+  
   useEffect(() => {
     if (showToast) {
       const timer = setTimeout(() => {
@@ -32,6 +26,8 @@ const ProfileEdit = () => {
     }
   }, [showToast]);
 
+  if (!user) return( <AuthRedirect />);
+  
   const handleSaveProfile = async () => {
     setError("");
     try {

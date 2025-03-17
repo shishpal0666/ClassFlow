@@ -11,9 +11,10 @@ ansRoute.post('/answer/submit', userAuth, async (req,res) => {
 
         validateAnswer(req);
 
-        const { answer, quesCode, questionId } = req.body;
+        const { answer, quesCode } = req.body;
 
         const question = await Question.findOne({ quesCode : quesCode });
+        const questionId = question._id;
 
         if(!question){
             throw new Error("Question not found");

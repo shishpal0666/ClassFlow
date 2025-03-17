@@ -1,25 +1,17 @@
-import { NavLink, useNavigate } from "react-router";
+import { NavLink } from "react-router"; 
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
-import Profileview from "../components/ProfileView";
-
+import ProfileView from "../components/ProfileView";
+import AuthRedirect from "./AuthRedirect";
 
 const Profile = () => {
-  const navigate = useNavigate();
   const user = useSelector((store) => store.user);
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
-
+  if (!user) return( <AuthRedirect />);
+  
   return (
-    user && (
-      <div className="profile-page">
-        <Profileview user={user} />
-      </div>
-    )
+    <div>
+      <ProfileView user={user} />
+    </div>
   );
 };
 

@@ -1,6 +1,31 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { removeUser } from "../utils/userSlice";
+import { SERVER_URL } from "../utils/constants";
 
 const Dock = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        SERVER_URL + "/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      dispatch(removeUser());
+
+      navigate("/");
+    } catch (err) {
+      console.error("Error during logout:", err.response?.data || err.message);
+    }
+  };
+
+
   return (
     <div className="dock bg-black text-neutral-content">
       <NavLink to="/">
@@ -60,7 +85,7 @@ const Dock = () => {
         <span className="dock-label">Profile</span>
       </NavLink>
 
-      <NavLink to="/logout">
+      <button onClick={handleLogout}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -76,7 +101,7 @@ const Dock = () => {
           />
         </svg>
         <span className="dock-label">Logout</span>
-      </NavLink>
+      </button>
     </div>
   );
 };

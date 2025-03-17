@@ -3,6 +3,9 @@ import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { SERVER_URL } from "../utils/constants";
+import AuthRedirect from "./AuthRedirect";
+import Toast from "./Toast";
+
 
 const NewQuestion = () => {
   const navigate = useNavigate();
@@ -10,32 +13,24 @@ const NewQuestion = () => {
   const [question, setQuestion] = useState("");
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
-  const [loading, setLoading] = useState(false); // New loading state
+  const [loading, setLoading] = useState(false);
   const textAreaRef = useRef(null);
 
   useEffect(() => {
-    if (!user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
-
-  useEffect(() => {
     if (showToast) {
-      const timer = setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
+      const timer = setTimeout(() => setShowToast(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showToast]);
 
   useEffect(() => {
     if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 3000);
+      const timer = setTimeout(() => setError(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  if (!user) return <AuthRedirect />;
 
   const handleInputChange = (e) => {
     setQuestion(e.target.value);
@@ -47,9 +42,7 @@ const NewQuestion = () => {
 
   const handleClear = () => {
     setQuestion("");
-    if (textAreaRef.current) {
-      textAreaRef.current.style.height = "auto";
-    }
+    if (textAreaRef.current) textAreaRef.current.style.height = "auto";
     setError("");
   };
 
@@ -60,18 +53,13 @@ const NewQuestion = () => {
       return;
     }
 
-    // Set loading state to true when request starts
     setLoading(true);
 
     try {
       const res = await axios.post(
         `${SERVER_URL}/question/create`,
-        {
-          question: question,
-        },
-        {
-          withCredentials: true,
-        }
+        { question },
+        { withCredentials: true }
       );
 
       setShowToast(true);
@@ -82,28 +70,14 @@ const NewQuestion = () => {
       console.error("Error during question creation:", err.response?.data || err.message);
       setError(err.response?.data?.message || "Something went wrong!");
     } finally {
-      // Reset loading state after request finishes
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center pt-10 min-h-screen p-6 bg-gray-900">
-      {showToast && (
-        <div className="fixed top-22 left-1/2 transform -translate-x-1/2 z-50 w-auto min-w-min">
-          <div className="bg-green-100 border-l-4 border-green-500 text-green-800 px-6 py-4 rounded-lg shadow-md">
-            <span className="font-medium">Question created successfully!</span>
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="fixed top-22 left-1/2 transform -translate-x-1/2 z-50 w-auto min-w-min">
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-800 px-6 py-4 rounded-lg shadow-md">
-            <span className="font-medium">{error}</span>
-          </div>
-        </div>
-      )}
+    <div className="flex flex-col flex-grow items-center p-6 bg-gray-900">
+      {showToast && <Toast message="Question created successfully!" type="success" />}
+      {error && <Toast message={error} type="error" />}
 
       <div className="w-full mt-10 max-w-3xl">
         <textarea
@@ -111,19 +85,17 @@ const NewQuestion = () => {
           placeholder="What is your Question?"
           value={question}
           onChange={handleInputChange}
-          rows={2}
-          className="w-full p-4 text-lg rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-hidden"
+          rows={4}
+          cols={60}
+          className="w-full p-6 text-xl rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-hidden"
         />
       </div>
-      <div className="mt-6 w-full max-w-3xl flex justify-center gap-4">
+
+      <div className="mt-6 w-full max-w-3xl flex justify-between gap-4">
         <button
           onClick={handleCreateQuestion}
           disabled={loading || !question.trim()}
-          className={`w-full md:w-auto px-8 py-4 ${
-            loading || !question.trim() 
-              ? "bg-blue-400 cursor-not-allowed" 
-              : "bg-blue-600 hover:bg-blue-700"
-          } text-white text-xl font-semibold rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300`}
+          className={`w-auto px-2 py-3 ${loading || !question.trim() ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"} text-white text-lg font-semibold rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300`}
         >
           {loading ? (
             <div className="flex items-center justify-center">
@@ -135,11 +107,7 @@ const NewQuestion = () => {
                 stroke="currentColor"
               >
                 <circle className="opacity-25" cx="12" cy="12" r="10" strokeWidth="4"></circle>
-                <path
-                  className="opacity-75"
-                  fill="none"
-                  d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0z"
-                ></path>
+                <path className="opacity-75" fill="none" d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0z"></path>
               </svg>
               Creating...
             </div>
@@ -149,7 +117,7 @@ const NewQuestion = () => {
         </button>
         <button
           onClick={handleClear}
-          className="w-full md:w-auto px-8 py-4 bg-gray-600 text-white text-xl font-semibold rounded-lg shadow-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-300"
+          className="w-auto px-6 py-3 bg-gray-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-300"
         >
           Clear
         </button>

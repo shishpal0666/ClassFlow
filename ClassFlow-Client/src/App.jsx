@@ -11,7 +11,6 @@ import NewQuestion from "./components/NewQuestion";
 import SubmitAnswer from "./components/SubmitAnswer";
 import ViewQA from "./components/ViewQA";
 import ProfileEdit from "./components/ProfileEdit";
-import Logout from "./components/Logout";
 import Login from "./components/Login";
 
 const App = () => {
@@ -24,9 +23,8 @@ const App = () => {
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/edit" element={<ProfileEdit />} />
             <Route path="/new/question" element={<NewQuestion />} />
-            <Route path="/answer/submit" element={<SubmitAnswer />} />
+            <Route path="/answer/:quesCode" element={<SubmitAnswer />} />
             <Route path="/question/:quesCode" element={<ViewQA />} />
-            <Route path="/logout" element={<Logout />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<Signup />} />
             <Route path="*" element={<Error />} />

@@ -26,13 +26,15 @@ const Body = () => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  });
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">
-        <Outlet />
+        <div >
+          <Outlet />
+        </div>
       </main>
       <Dock />
       <Footer />
