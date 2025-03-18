@@ -33,9 +33,14 @@ authRoute.post('/sign-up',async (req,res)=>{
         const token = await savedUser.getJWT();
 
         // Add tocken to cookies
+          
         res.cookie("token", token, {
-            expires: new Date(Date.now() + 8 * 3600000),
-        });        
+            httpOnly: true,   
+            secure: true,     
+            sameSite: "None", 
+            expires: new Date(Date.now() + 8 * 3600000), 
+        });
+         
 
         res.json({ message: `${savedUser.firstname} has been registered`, data: savedUser });
     }catch(err){
@@ -68,7 +73,10 @@ authRoute.post('/login', async (req,res)=>{
 
         // Add tocken to cookies
         res.cookie("token", token, {
-            expires: new Date(Date.now() + 8 * 3600000),
+            httpOnly: true,   
+            secure: true,     
+            sameSite: "None", 
+            expires: new Date(Date.now() + 8 * 3600000), 
         });
         
         res.json({ message: "Login!", data: user });
@@ -82,8 +90,11 @@ authRoute.post('/login', async (req,res)=>{
 authRoute.post('/logout', async (req,res)=>{
     try{
 
-        res.cookie("token", null, {
-            expires: new Date(Date.now()),
+        res.cookie("token", null , {
+            httpOnly: true,   
+            secure: true,     
+            sameSite: "None", 
+            expires: new Date(Date.now() + 8 * 3600000), 
         });
 
         res.json({ message: "Logout!"});
