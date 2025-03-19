@@ -54,7 +54,7 @@ const Profileview = ({ user }) => {
             Questions Asked
           </h4>
           <p className="text-sm sm:text-lg text-gray-400 text-center">
-            No Questions Yet...
+            Comming Soon ...
           </p>
         </div>
 

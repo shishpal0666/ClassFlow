@@ -4,16 +4,37 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { SERVER_URL } from "../utils/constants";
 import AuthRedirect from "./AuthRedirect";
+import QuestionCard from "./QuestionCard";
 import Toast from "./Toast";
 
 const SubmitAnswer = () => {
   const { quesCode } = useParams();
+  const [question, setQuestion] = useState("");
   const user = useSelector((store) => store.user);
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [loading, setLoading] = useState(false);
   const textAreaRef = useRef(null);
+
+  const fetchQues = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_URL}/question/view/${quesCode}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setQuestion(response?.data?.data?.question?.question);
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+    }
+  };
+
+  
+  useEffect(() => {
+    fetchQues();
+  }); 
 
   useEffect(() => {
     if (showToast) {
@@ -63,7 +84,10 @@ const SubmitAnswer = () => {
 
       setShowToast(true);
     } catch (err) {
-      console.error("Error during answer creation:", err.response?.data || err.message);
+      console.error(
+        "Error during answer creation:",
+        err.response?.data || err.message
+      );
       setError(err.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
@@ -72,8 +96,14 @@ const SubmitAnswer = () => {
 
   return (
     <div className="flex flex-col flex-grow items-center p-6 bg-gray-900">
-      {showToast && <Toast message="Answer submitted successfully!" type="success" />}
+      {showToast && (
+        <Toast message="Answer submitted successfully!" type="success" />
+      )}
       {error && <Toast message={error} type="error" />}
+
+      <div className="w-full mt-10 max-w-3xl">
+        <QuestionCard quesCode={quesCode} question={question} />
+      </div>
 
       <div className="w-full mt-10 max-w-3xl">
         <textarea
@@ -81,7 +111,7 @@ const SubmitAnswer = () => {
           placeholder="What is your answer?"
           value={answer}
           onChange={handleInputChange}
-          rows={4}  
+          rows={4}
           cols={60}
           className="w-full p-6 text-xl rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-hidden"
         />
@@ -91,7 +121,11 @@ const SubmitAnswer = () => {
         <button
           onClick={handleCreateAnswer}
           disabled={loading || !answer.trim()}
-          className={`w-auto px-2 py-3 ${loading || !answer.trim() ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"} text-white text-lg font-semibold rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300`}
+          className={`w-auto px-2 py-3 ${
+            loading || !answer.trim()
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          } text-white text-lg font-semibold rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300`}
         >
           {loading ? (
             <div className="flex items-center justify-center">
@@ -102,8 +136,18 @@ const SubmitAnswer = () => {
                 fill="none"
                 stroke="currentColor"
               >
-                <circle className="opacity-25" cx="12" cy="12" r="10" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="none" d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0z"></path>
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="none"
+                  d="M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0z"
+                ></path>
               </svg>
               Creating...
             </div>
