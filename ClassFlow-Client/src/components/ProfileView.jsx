@@ -1,4 +1,5 @@
 import { NavLink } from "react-router";
+import History from "./History";
 
 const Profileview = ({ user }) => {
   const { firstname, lastname, emailId, age, gender, createdAt } =
@@ -47,25 +48,17 @@ const Profileview = ({ user }) => {
               </dd>
             </div>
           </dl>
-        </div>
 
-        <div className="bg-gray-600 mt-6 sm:mt-8 p-6 sm:p-8 rounded-lg shadow-md">
-          <h4 className="text-lg sm:text-xl font-semibold text-gray-100 text-center">
-            Questions Asked
-          </h4>
-          <p className="text-sm sm:text-lg text-gray-400 text-center">
-            Comming Soon ...
-          </p>
+          <div className="flex justify-end mt-6 sm:mt-8">
+            <NavLink
+              to="/profile/edit"
+              className="bg-blue-600 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg hover:bg-blue-700 transition"
+            >
+              Edit Profile
+            </NavLink>
+          </div>
         </div>
-
-        <div className="flex justify-end mt-6 sm:mt-8">
-          <NavLink
-            to="/profile/edit"
-            className="bg-blue-600 text-white py-2 sm:py-3 px-4 sm:px-6 rounded-lg hover:bg-blue-700 transition"
-          >
-            Edit Profile
-          </NavLink>
-        </div>
+        <History />
       </div>
     </div>
   );

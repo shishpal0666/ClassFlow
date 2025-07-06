@@ -29,12 +29,14 @@ const { authRoute } = require("./routes/auth");
 const { profileRoute } = require("./routes/profile");
 const { quesRoute } = require("./routes/createQues");
 const { ansRoute } = require("./routes/submitAns");
+const { historyRoute } = require("./routes/history");
 
 // express routes
 app.use("/", authRoute);
 app.use("/", profileRoute);
 app.use("/", quesRoute);
 app.use("/", ansRoute);
+app.use("/", historyRoute);
 
 connectDB()
   .then(() => {
