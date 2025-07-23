@@ -6,6 +6,8 @@ const { userAuth } = require("../middleware/userAuth");
 const { checkQuesOwner } = require("../middleware/checkQuesOwner");
 const { validateQuestion } = require("../utils/validators");
 
+const MAX_LIMIT = 50;
+
 quesRoute.get(
   "/question/:quesCode",
   userAuth,
@@ -51,26 +53,65 @@ quesRoute.post("/question/create", userAuth, async (req, res) => {
 
 quesRoute.get("/question/view/:quesCode", userAuth, async (req, res) => {
   try {
-    const quesCode = req.params.quesCode;
+    const quesCode = String(req.params.quesCode).replace(/[^a-zA-Z0-9_-]/g, "");
+    const includeAnswers = req.query.includeAnswers === "true";
+    let page = parseInt(req.query.page, 10);
+    let limit = parseInt(req.query.limit, 10);
 
     if (!quesCode) {
-      throw new Error("Question Code Required");
+      return res.status(400).json({ message: "Invalid Question Code" });
+    }
+    if (isNaN(page) || page < 1) page = 1;
+    if (isNaN(limit) || limit < 1 || limit > MAX_LIMIT) limit = 10;
+
+    // Select timestamps and answerCount as well
+    const question = await Question.findOne({ quesCode })
+      .select("question quesCode fromUserId answerCount createdAt updatedAt");
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
     }
 
-    const question = await Question.findOne({ quesCode: quesCode });
+    let responseData = { question };
 
-    if (!question) {
-      throw new Error("Question not found");
+    if (includeAnswers) {
+      const skip = (page - 1) * limit;
+      // Select createdAt for answers
+      const ansForQues = await Answers.find({ quesCode })
+        .select("answer createdAt")
+        .skip(skip)
+        .limit(limit);
+      responseData.answers = ansForQues.map((item) => ({
+        answer: item.answer,
+        createdAt: item.createdAt,
+      }));
     }
 
     res.json({
       message: "Question",
-      data: {
-        question: question,
-      },
+      data: responseData,
     });
   } catch (err) {
-    res.status(400).send(err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+quesRoute.get("/user/questions", userAuth, async (req, res) => {
+  try {
+    let page = parseInt(req.query.page, 10) || 1;
+    let limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+
+    const questions = await Question.find({ fromUserId: req.user._id })
+      .select("question quesCode answerCount createdAt updatedAt")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Question.countDocuments({ fromUserId: req.user._id });
+
+    res.json({ data: { questions, total, page, limit } });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 });
 

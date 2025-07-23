@@ -1,76 +1,78 @@
 import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router";
 import axios from "axios";
-import { useSelector } from "react-redux";
 import { SERVER_URL } from "../utils/constants";
-import QuestionCard from "./QuestionCard";
+
+const PAGE_LIMIT = 10;
 
 const QuestionHistory = () => {
-  const user = useSelector((store) => store.user);
   const [questions, setQuestions] = useState([]);
-  const [qPage, setQPage] = useState(1);
-  const [qTotalPages, setQTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const limit = 5;
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!user) return;
-    fetchQuestions(qPage);
-  }, [user, qPage]);
+    const fetchQuestions = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `${SERVER_URL}/user/questions?page=${page}&limit=${PAGE_LIMIT}`,
+          { withCredentials: true }
+        );
+        setQuestions(res.data.data.questions || []);
+        setTotal(res.data.data.total || 0);
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to load questions.");
+        setLoading(false);
+        console.error(err);
+      }
+    };
+    fetchQuestions();
+  }, [page]);
 
-  const fetchQuestions = async (page) => {
-    try {
-      setLoading(true);
-      const res = await axios.get(
-        `${SERVER_URL}/user/history/questions?page=${page}&limit=${limit}`,
-        { withCredentials: true }
-      );
-      setQuestions(res.data.questions);
-      setQTotalPages(res.data.totalPages);
-    } catch (err) {
-      console.error("Error fetching questions:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const totalPages = Math.ceil(total / PAGE_LIMIT);
+
+  if (loading) return <div className="text-center py-8 text-white">Loading...</div>;
+  if (error) return <div className="text-center py-8 text-red-500">{error}</div>;
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4 text-center">Questions You Asked</h2>
-      {loading ? (
-        <p className="text-center text-gray-300 animate-pulse">Loading questions...</p>
-      ) : questions.length === 0 ? (
-        <p className="text-center text-gray-300">No questions found.</p>
-      ) : (
-        questions.map((q) => (
-          <QuestionCard
-            key={q._id}
-            quesCode={q.quesCode}
-            question={q.question}
-            createdAt={q.createdAt}
-            updatedAt={q.updatedAt}
-          />
-        ))
-      )}
-
-      {questions.length > 0 && (
-        <div className="flex justify-center gap-4 mt-6">
-          <button
-            onClick={() => setQPage((p) => Math.max(1, p - 1))}
-            disabled={qPage === 1}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
-          >
-            Prev
-          </button>
-          <span className="text-lg">Page {qPage} of {qTotalPages}</span>
-          <button
-            onClick={() => setQPage((p) => Math.min(qTotalPages, p + 1))}
-            disabled={qPage === qTotalPages}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <div className="flex flex-col gap-4">
+        {questions.map((q) => (
+          <div key={q.quesCode} className="bg-gray-800 p-4 rounded-lg flex flex-col md:flex-row md:items-center justify-between">
+            <div>
+              <div className="text-white font-semibold">{q.question}</div>
+              <div className="text-xs text-gray-400">Asked: {new Date(q.createdAt).toLocaleString()}</div>
+              <div className="text-xs text-gray-400">Answers: {q.answerCount}</div>
+            </div>
+            <NavLink
+              to={`/question/view/${q.quesCode}`}
+              className="mt-2 md:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition text-center"
+            >
+              View Details
+            </NavLink>
+          </div>
+        ))}
+      </div>
+      <div className="flex justify-center mt-6 gap-2">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="px-4 py-2 rounded bg-gray-700 text-white disabled:opacity-50"
+        >
+          Back
+        </button>
+        <span className="px-4 py-2 text-white">{page} / {totalPages}</span>
+        <button
+          disabled={page === totalPages || totalPages === 0}
+          onClick={() => setPage(page + 1)}
+          className="px-4 py-2 rounded bg-gray-700 text-white disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

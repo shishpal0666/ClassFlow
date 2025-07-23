@@ -9,7 +9,7 @@ import Toast from "./Toast";
 
 const SubmitAnswer = () => {
   const { quesCode } = useParams();
-  const [question, setQuestion] = useState("");
+  const [questionObj, setQuestionObj] = useState(null);
   const user = useSelector((store) => store.user);
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState("");
@@ -25,16 +25,15 @@ const SubmitAnswer = () => {
           withCredentials: true,
         }
       );
-      setQuestion(response?.data?.data?.question?.question);
+      setQuestionObj(response?.data?.data?.question || null);
     } catch (err) {
       console.error(err.response?.data || err.message);
     }
   };
 
-  
   useEffect(() => {
     fetchQues();
-  }); 
+  }, [quesCode]);
 
   useEffect(() => {
     if (showToast) {
@@ -102,7 +101,15 @@ const SubmitAnswer = () => {
       {error && <Toast message={error} type="error" />}
 
       <div className="w-full mt-10 max-w-3xl">
-        <QuestionCard quesCode={quesCode} question={question} />
+        {questionObj && (
+          <QuestionCard
+            quesCode={questionObj.quesCode}
+            question={questionObj.question}
+            createdAt={questionObj.createdAt}
+            updatedAt={questionObj.updatedAt}
+            answerCount={questionObj.answerCount}
+          />
+        )}
       </div>
 
       <div className="w-full mt-10 max-w-3xl">

@@ -64,7 +64,7 @@ const NewQuestion = () => {
 
       setShowToast(true);
       setTimeout(() => {
-        navigate(`/question/${res?.data?.question?.quesCode}`);
+        navigate(`/question/view/${res?.data?.question?.quesCode}`);
       }, 1000);
     } catch (err) {
       console.error("Error during question creation:", err.response?.data || err.message);

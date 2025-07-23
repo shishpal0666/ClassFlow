@@ -16,6 +16,10 @@ const questionSchema = new mongoose.Schema(
             type : String,
             unique : true,
         },
+        answerCount: {
+            type: Number,
+            default: 0,
+        },
     },
     {
         timestamps : true,

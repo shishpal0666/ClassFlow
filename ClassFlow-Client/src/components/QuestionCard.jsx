@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
 
-const QuestionCard = ({ quesCode, question }) => {
+const QuestionCard = ({ quesCode, question, createdAt, updatedAt, answerCount }) => {
   const [copySuccess, setCopySuccess] = useState(false);
   const user = useSelector((store) => store.user);
 
@@ -27,8 +27,17 @@ const QuestionCard = ({ quesCode, question }) => {
       .catch(() => setCopySuccess(false));
   };
 
+  const askedDate =
+    createdAt && !isNaN(new Date(createdAt).getTime())
+      ? new Date(createdAt).toLocaleString()
+      : "N/A";
+  const updatedDate =
+    updatedAt && !isNaN(new Date(updatedAt).getTime())
+      ? new Date(updatedAt).toLocaleString()
+      : null;
+
   return (
-    <div className="bg-gray-800 p-4 md:p-6 rounded-lg shadow-md mb-6 border-l-4 border-blue-500">
+    <div className="bg-gray-800 p-6 rounded-lg mb-6 shadow-lg">
       <div className="flex items-center gap-2 mb-2">
         <span className="bg-blue-500 text-white px-2 py-1 rounded text-sm">
           Question
@@ -75,6 +84,11 @@ const QuestionCard = ({ quesCode, question }) => {
         </button>
       </div>
       <h2 className="text-xl text-white font-bold">{question}</h2>
+      <div className="text-sm text-gray-400 mb-1">Answers: {answerCount}</div>
+      <div className="text-xs text-gray-500">
+        Asked: {askedDate}
+        {updatedDate && <span> &middot; Updated: {updatedDate}</span>}
+      </div>
     </div>
   );
 };

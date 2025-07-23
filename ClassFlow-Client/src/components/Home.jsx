@@ -68,7 +68,7 @@ const Home = () => {
 
       if (res?.data?.data?.question) {
         if (res?.data?.data?.question?.fromUserId === user?.data?._id) {
-          navigate(`/question/${quesCode}`);
+          navigate(`/question/view/${quesCode}`);
           showToastMessage("Question viewed successfully!", "success");
         } else {
           showToastMessage("You are not authorized to view this Q&A.", "error");

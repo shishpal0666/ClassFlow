@@ -24,7 +24,7 @@ const App = () => {
             <Route path="/profile/edit" element={<ProfileEdit />} />
             <Route path="/new/question" element={<NewQuestion />} />
             <Route path="/answer/:quesCode" element={<SubmitAnswer />} />
-            <Route path="/question/:quesCode" element={<ViewQA />} />
+            <Route path="/question/view/:quesCode" element={<ViewQA />} />
             <Route path="/login" element={<Login />} />
             <Route path="/sign-up" element={<Signup />} />
             <Route path="*" element={<Error />} />
