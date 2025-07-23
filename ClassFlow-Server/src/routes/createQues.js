@@ -74,14 +74,16 @@ quesRoute.get("/question/view/:quesCode", userAuth, async (req, res) => {
     if (isNaN(page) || page < 1) page = 1;
     if (isNaN(limit) || limit < 1 || limit > MAX_LIMIT) limit = 10;
 
-    // Select timestamps and answerCount as well
+    // Select timestamps, answerCount, and answerDeadline as well
     const question = await Question.findOne({ quesCode })
-      .select("question quesCode fromUserId answerCount createdAt updatedAt");
+      .select("question quesCode fromUserId answerCount createdAt updatedAt answerDeadline");
     if (!question) {
       return res.status(404).json({ message: "Question not found" });
     }
 
-    let responseData = { question };
+
+    // Ensure answerDeadline is included in the response
+    let responseData = { ...question.toObject() };
 
     if (includeAnswers) {
       const skip = (page - 1) * limit;
@@ -112,7 +114,7 @@ quesRoute.get("/user/questions", userAuth, async (req, res) => {
     const skip = (page - 1) * limit;
 
     const questions = await Question.find({ fromUserId: req.user._id })
-      .select("question quesCode answerCount createdAt updatedAt")
+      .select("question quesCode answerCount createdAt updatedAt answerDeadline")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);

@@ -85,7 +85,7 @@ const ViewQA = () => {
         withCredentials: true,
       });
       console.log(quesCode);
-      setQaData(res?.data?.data?.question || null);
+      setQaData(res?.data?.data || null);
       setLoadingQuestion(false);
     } catch {
       setError("Failed to load question");
@@ -185,7 +185,16 @@ const ViewQA = () => {
   return (
     <div className="min-h-screen p-4 md:p-6 bg-gray-900">
       <div className="max-w-6xl mx-auto">
+
         <QuestionCard {...qaData} />
+        {qaData?.answerDeadline && (
+          <div className="mt-4 text-sm text-gray-300">
+            <span className="font-semibold">Answer Deadline:</span> {new Date(qaData.answerDeadline).toLocaleString()}
+            {new Date() > new Date(qaData.answerDeadline) && (
+              <span className="ml-2 text-red-400 font-bold">(Closed)</span>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-col p-4 bg-gray-800 border-2 border-gray-700 rounded-lg mb-8">
           <Header answerCount={qaData?.answerCount || answers.length} />

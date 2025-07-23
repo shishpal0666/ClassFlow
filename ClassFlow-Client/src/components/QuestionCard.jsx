@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
 
-const QuestionCard = ({ quesCode, question, createdAt, updatedAt, answerCount }) => {
+const QuestionCard = ({ quesCode, question, createdAt, updatedAt, answerCount, answerDeadline }) => {
   const [copySuccess, setCopySuccess] = useState(false);
   const user = useSelector((store) => store.user);
 
@@ -85,6 +85,12 @@ const QuestionCard = ({ quesCode, question, createdAt, updatedAt, answerCount })
       </div>
       <h2 className="text-xl text-white font-bold">{question}</h2>
       <div className="text-sm text-gray-400 mb-1">Answers: {answerCount}</div>
+      <div className="text-xs text-gray-500 mb-1">
+        {answerDeadline
+          ? <span>Valid until: {new Date(answerDeadline).toLocaleString()} {new Date() > new Date(answerDeadline) && <span className="text-red-400 font-bold">(Closed)</span>}</span>
+          : <span>No time limit</span>
+        }
+      </div>
       <div className="text-xs text-gray-500">
         Asked: {askedDate}
         {updatedDate && <span> &middot; Updated: {updatedDate}</span>}

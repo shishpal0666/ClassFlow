@@ -25,7 +25,7 @@ const SubmitAnswer = () => {
           withCredentials: true,
         }
       );
-      setQuestionObj(response?.data?.data?.question || null);
+      setQuestionObj(response?.data?.data || null);
     } catch (err) {
       console.error(err.response?.data || err.message);
     }
@@ -95,6 +95,11 @@ const SubmitAnswer = () => {
     }
   };
 
+  // Check if deadline is set and passed
+  const deadline = questionObj?.answerDeadline ? new Date(questionObj.answerDeadline) : null;
+  const now = new Date();
+  const isClosed = deadline && now > deadline;
+
   return (
     <div className="flex flex-col flex-grow items-center p-6 bg-gray-900">
       {showToast && (
@@ -112,31 +117,40 @@ const SubmitAnswer = () => {
             answerCount={questionObj.answerCount}
           />
         )}
+        {deadline && (
+          <div className="mt-4 text-sm text-gray-300">
+            <span className="font-semibold">Answer Deadline:</span> {deadline.toLocaleString()}
+            {isClosed && <span className="ml-2 text-red-400 font-bold">(Closed)</span>}
+          </div>
+        )}
       </div>
 
       <div className="w-full mt-10 max-w-3xl">
         <textarea
           ref={textAreaRef}
-          placeholder="What is your answer?"
+          placeholder={isClosed ? "Answer submission is closed for this question." : "What is your answer?"}
           value={answer}
           onChange={handleInputChange}
           rows={4}
           cols={60}
           className="w-full p-6 text-xl rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-hidden"
+          disabled={isClosed}
         />
       </div>
 
       <div className="mt-6 w-full max-w-3xl flex justify-between gap-4">
         <button
           onClick={handleCreateAnswer}
-          disabled={loading || !answer.trim()}
+          disabled={loading || !answer.trim() || isClosed}
           className={`w-auto px-2 py-3 ${
-            loading || !answer.trim()
+            loading || !answer.trim() || isClosed
               ? "bg-blue-400 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700"
           } text-white text-lg font-semibold rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300`}
         >
-          {loading ? (
+          {isClosed ? (
+            "Answering Closed"
+          ) : loading ? (
             <div className="flex items-center justify-center">
               <svg
                 className="animate-spin h-5 w-5 mr-3 text-white"
@@ -166,11 +180,17 @@ const SubmitAnswer = () => {
         </button>
         <button
           onClick={handleClear}
+          disabled={isClosed}
           className="w-auto px-6 py-3 bg-gray-600 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-300"
         >
           Clear
         </button>
       </div>
+      {isClosed && (
+        <div className="mt-6 text-red-400 font-semibold text-center">
+          Answer submission is closed for this question.
+        </div>
+      )}
     </div>
   );
 };
