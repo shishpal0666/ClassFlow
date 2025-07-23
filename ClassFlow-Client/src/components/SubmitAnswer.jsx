@@ -82,6 +82,8 @@ const SubmitAnswer = () => {
       );
 
       setShowToast(true);
+      setAnswer(""); // Clear input after successful submit
+      setQuestionObj((prev) => prev ? { ...prev, answerCount: (prev.answerCount || 0) + 1 } : prev);
     } catch (err) {
       console.error(
         "Error during answer creation:",

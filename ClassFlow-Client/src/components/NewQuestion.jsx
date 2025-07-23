@@ -14,6 +14,8 @@ const NewQuestion = () => {
   const [error, setError] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [hasDeadline, setHasDeadline] = useState(false);
+  const [deadline, setDeadline] = useState("");
   const textAreaRef = useRef(null);
 
   useEffect(() => {
@@ -52,13 +54,17 @@ const NewQuestion = () => {
       setError("Question cannot be empty!");
       return;
     }
+    if (hasDeadline && !deadline) {
+      setError("Please select a deadline or disable the time constraint.");
+      return;
+    }
 
     setLoading(true);
 
     try {
       const res = await axios.post(
         `${SERVER_URL}/question/create`,
-        { question },
+        { question, answerDeadline: hasDeadline ? deadline : null },
         { withCredentials: true }
       );
 
@@ -89,6 +95,31 @@ const NewQuestion = () => {
           cols={60}
           className="w-full p-6 text-xl rounded-lg bg-gray-800 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-hidden"
         />
+        <div className="mt-6 flex items-center gap-4">
+          <label className="flex items-center gap-2 text-white">
+            <input
+              type="checkbox"
+              checked={hasDeadline}
+              onChange={e => setHasDeadline(e.target.checked)}
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            Set answer time limit
+          </label>
+          {hasDeadline && (
+            <input
+              type="datetime-local"
+              value={deadline}
+              onChange={e => setDeadline(e.target.value)}
+              className="ml-4 p-2 rounded bg-gray-700 text-white border border-gray-600"
+              min={new Date().toISOString().slice(0, 16)}
+            />
+          )}
+        </div>
+        {hasDeadline && deadline && (
+          <div className="text-sm text-gray-400 mt-2">
+            Answers will be accepted until: {new Date(deadline).toLocaleString()}
+          </div>
+        )}
       </div>
 
       <div className="mt-6 w-full max-w-3xl flex justify-between gap-4">

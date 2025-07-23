@@ -1,9 +1,11 @@
 const express = require('express');
 const ansRoute = express.Router();
+
 const { userAuth } = require('../middleware/userAuth');
 const { validateAnswer } = require('../utils/validators');
 const Question = require('../models/question');
 const Answer = require('../models/answer');
+const { getIO } = require('../socket');
 
 
 ansRoute.post('/answer/submit', userAuth, async (req,res) => {
@@ -13,8 +15,13 @@ ansRoute.post('/answer/submit', userAuth, async (req,res) => {
         const { answer, quesCode } = req.body;
         const question = await Question.findOne({ quesCode: quesCode });
 
+
         if (!question) {
             throw new Error("Question not found");
+        }
+        // Check if answer deadline has passed
+        if (question.answerDeadline && new Date() > question.answerDeadline) {
+            return res.status(403).json({ message: "Answer submission is closed for this question." });
         }
 
         const questionId = question._id;
@@ -33,6 +40,10 @@ ansRoute.post('/answer/submit', userAuth, async (req,res) => {
             { _id: questionId },
             { $inc: { answerCount: 1 } }
         );
+
+        // Emit socket event for new answer
+        const io = getIO();
+        io.emit('newAnswer', { answer: newAns });
 
         res.json({ message: "Answer submitted successfully", answer: newAns });
     } catch (err) {

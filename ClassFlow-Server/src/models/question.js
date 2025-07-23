@@ -20,6 +20,11 @@ const questionSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
+        // Optional deadline for accepting answers
+        answerDeadline: {
+            type: Date,
+            default: null,
+        },
     },
     {
         timestamps : true,

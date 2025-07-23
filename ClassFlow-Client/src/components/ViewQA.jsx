@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import socket from "../utils/socket";
 import { useParams } from "react-router";
 import { useSelector } from "react-redux";
 import axios from "axios";
@@ -83,6 +84,7 @@ const ViewQA = () => {
       const res = await axios.get(`${SERVER_URL}/question/view/${quesCode}`, {
         withCredentials: true,
       });
+      console.log(quesCode);
       setQaData(res?.data?.data?.question || null);
       setLoadingQuestion(false);
     } catch {
@@ -112,6 +114,7 @@ const ViewQA = () => {
     }
   };
 
+  // Initial load/reset only on quesCode change
   useEffect(() => {
     fetchQuestion();
     setAnswers([]);
@@ -120,10 +123,26 @@ const ViewQA = () => {
     setError(null);
   }, [quesCode]);
 
+  // Socket event: only add answer, do not reset or reload
   useEffect(() => {
-    if (qaData) {
+    const handleNewAnswer = (data) => {
+      if (data?.answer?.quesCode === quesCode) {
+        setAnswers((prev) => [data.answer, ...prev]);
+        setQaData((prev) => prev ? { ...prev, answerCount: (prev.answerCount || 0) + 1 } : prev);
+      }
+    };
+    socket.on('newAnswer', handleNewAnswer);
+    return () => {
+      socket.off('newAnswer', handleNewAnswer);
+    };
+  }, [quesCode]);
+
+  // Only fetch answers on initial question load, not on every qaData change
+  useEffect(() => {
+    if (qaData && answers.length === 0) {
       fetchAnswers(1, true);
     }
+    // eslint-disable-next-line
   }, [qaData]);
 
   useEffect(() => {

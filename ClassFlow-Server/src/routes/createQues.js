@@ -36,15 +36,25 @@ quesRoute.post("/question/create", userAuth, async (req, res) => {
   try {
     validateQuestion(req);
 
-    const { question } = req.body;
+
+    const { question, answerDeadline } = req.body;
 
     const createNewQues = new Question({
       fromUserId: req.user._id,
       question,
+      answerDeadline: answerDeadline ? new Date(answerDeadline) : null,
     });
 
     const newQues = await createNewQues.save();
 
+    // Emit socket event for new question
+    const { getIO } = require('../socket');
+    try {
+      const io = getIO();
+      io.emit('newQuestion', { question: newQues });
+    } catch (e) {
+      // socket not initialized, ignore
+    }
     res.json({ message: "Question created successfully", question: newQues });
   } catch (err) {
     res.status(400).send(err.message);
