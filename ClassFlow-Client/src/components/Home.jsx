@@ -60,28 +60,28 @@ const Home = () => {
     }
   };
 
-  const handleviewQA = async () => {
-    try {
-      const res = await axios.get(`${SERVER_URL}/question/view/${quesCode}`, {
-        withCredentials: true,
-      });
+  // const handleviewQA = async () => {
+  //   try {
+  //     const res = await axios.get(`${SERVER_URL}/question/view/${quesCode}`, {
+  //       withCredentials: true,
+  //     });
 
-      if (res?.data?.data?.question) {
-        if (res?.data?.data?.question?.fromUserId === user?.data?._id) {
-          navigate(`/question/view/${quesCode}`);
-          showToastMessage("Question viewed successfully!", "success");
-        } else {
-          showToastMessage("You are not authorized to view this Q&A.", "error");
-        }
-      } else {
-        showToastMessage("Question not found or invalid code!", "error");
-      }
-    } catch (err) {
-      console.error(err.response?.data || err.message);
-      const errorMessage = err.response?.data?.message || "There was an error while fetching the question!";
-      showToastMessage(errorMessage, "error");
-    }
-  };
+  //     if (res?.data?.data?.question) {
+  //       if (res?.data?.data?.question?.fromUserId === user?.data?._id) {
+  //         navigate(`/question/view/${quesCode}`);
+  //         showToastMessage("Question viewed successfully!", "success");
+  //       } else {
+  //         showToastMessage("You are not authorized to view this Q&A.", "error");
+  //       }
+  //     } else {
+  //       showToastMessage("Question not found or invalid code!", "error");
+  //     }
+  //   } catch (err) {
+  //     console.error(err.response?.data || err.message);
+  //     const errorMessage = err.response?.data?.message || "There was an error while fetching the question!";
+  //     showToastMessage(errorMessage, "error");
+  //   }
+  // };
 
   return (
     <div className="flex flex-col items-center min-h-screen p-6 bg-gray-900">
@@ -111,12 +111,12 @@ const Home = () => {
               Answer
             </button>
 
-            <button
+            {/* <button
               onClick={handleviewQA}
               className="btn m-2 px-6 py-3 bg-red-600 text-white text-lg font-medium rounded-lg shadow-md hover:bg-red-700 transition"
             >
               View Q&A
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
