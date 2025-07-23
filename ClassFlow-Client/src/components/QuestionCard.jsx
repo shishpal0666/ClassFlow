@@ -37,17 +37,13 @@ const QuestionCard = ({ quesCode, question, createdAt, updatedAt, answerCount, a
       : null;
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg mb-6 shadow-lg">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="bg-blue-500 text-white px-2 py-1 rounded text-sm">
-          Question
-        </span>
-        <span className="bg-gray-700 text-gray-300 px-2 py-1 rounded text-sm">
-          {quesCode}
-        </span>
-        <button 
+    <div className="bg-base-200 p-4 sm:p-6 rounded-xl mb-6 shadow-lg border border-base-300 max-w-2xl mx-auto w-full">
+      <div className="flex flex-wrap items-center gap-2 mb-2">
+        <span className="badge badge-primary text-xs font-semibold">Question</span>
+        <span className="badge badge-outline text-xs font-mono select-all">{quesCode}</span>
+        <button
           onClick={handleCopy}
-          className="ml-2 text-gray-300 hover:text-white"
+          className="ml-2 text-base-content hover:text-primary transition"
           aria-label="Copy code"
         >
           {copySuccess ? (
@@ -83,15 +79,16 @@ const QuestionCard = ({ quesCode, question, createdAt, updatedAt, answerCount, a
           )}
         </button>
       </div>
-      <h2 className="text-xl text-white font-bold">{question}</h2>
-      <div className="text-sm text-gray-400 mb-1">Answers: {answerCount}</div>
-      <div className="text-xs text-gray-500 mb-1">
+      <h2 className="text-lg sm:text-xl text-base-content font-bold break-words mb-1">{question}</h2>
+      <div className="flex flex-wrap gap-2 items-center text-sm text-base-content/70 mb-1">
+        <span>Answers: <span className="font-semibold text-base-content">{answerCount}</span></span>
+        <span className="hidden sm:inline">|</span>
         {answerDeadline
           ? <span>Valid until: {new Date(answerDeadline).toLocaleString()} {new Date() > new Date(answerDeadline) && <span className="text-red-400 font-bold">(Closed)</span>}</span>
           : <span>No time limit</span>
         }
       </div>
-      <div className="text-xs text-gray-500">
+      <div className="text-xs text-base-content/60">
         Asked: {askedDate}
         {updatedDate && <span> &middot; Updated: {updatedDate}</span>}
       </div>

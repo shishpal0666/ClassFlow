@@ -18,17 +18,13 @@ const SubmitAnswer = () => {
   const textAreaRef = useRef(null);
 
   const fetchQues = async () => {
-    try {
-      const response = await axios.get(
-        `${SERVER_URL}/question/view/${quesCode}`,
-        {
-          withCredentials: true,
-        }
-      );
-      setQuestionObj(response?.data?.data || null);
-    } catch (err) {
-      console.error(err.response?.data || err.message);
-    }
+    const response = await axios.get(
+      `${SERVER_URL}/question/view/${quesCode}`,
+      {
+        withCredentials: true,
+      }
+    );
+    setQuestionObj(response?.data?.data || null);
   };
 
   useEffect(() => {
@@ -66,33 +62,16 @@ const SubmitAnswer = () => {
   };
 
   const handleCreateAnswer = async () => {
-    setError("");
-    if (!answer.trim()) {
-      setError("Answer cannot be empty!");
-      return;
-    }
-
     setLoading(true);
-
-    try {
-      await axios.post(
-        `${SERVER_URL}/answer/submit`,
-        { answer, quesCode },
-        { withCredentials: true }
-      );
-
-      setShowToast(true);
-      setAnswer(""); // Clear input after successful submit
-      setQuestionObj((prev) => prev ? { ...prev, answerCount: (prev.answerCount || 0) + 1 } : prev);
-    } catch (err) {
-      console.error(
-        "Error during answer creation:",
-        err.response?.data || err.message
-      );
-      setError(err.response?.data?.message || "Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
+    await axios.post(
+      `${SERVER_URL}/answer/submit`,
+      { answer, quesCode },
+      { withCredentials: true }
+    );
+    setShowToast(true);
+    setAnswer("");
+    setQuestionObj((prev) => prev ? { ...prev, answerCount: (prev.answerCount || 0) + 1 } : prev);
+    setLoading(false);
   };
 
   // Check if deadline is set and passed
