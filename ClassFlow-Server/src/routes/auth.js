@@ -94,7 +94,7 @@ authRoute.post('/logout', async (req,res)=>{
             httpOnly: true,   
             secure: true,     
             sameSite: "None", 
-            expires: new Date(Date.now() + 30 * 24 * 3600000), 
+            expires: new Date(Date.now()), 
         });
 
         res.json({ message: "Logout!"});
